@@ -4,6 +4,7 @@ import java.util.List;
  
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
  
 import com.productservice.microservice.dto.ProductRequest;
@@ -29,5 +30,11 @@ public class ProductController {
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products = productService.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+    
+    @GetMapping("/say-good")
+    public ResponseEntity<String> getSayGoodBye() {
+		return ResponseEntity.ok("hello all");
+    	
     }
 }
