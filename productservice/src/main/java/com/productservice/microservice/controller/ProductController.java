@@ -33,8 +33,16 @@ public class ProductController {
     }
     
     @GetMapping("/say-good")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public ResponseEntity<String> getSayGoodBye() {
 		return ResponseEntity.ok("hello all");
+    	
+    }
+    
+    @GetMapping("/say-nice")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    public ResponseEntity<String> getSayGoodnice() {
+		return ResponseEntity.ok("say nice to meet you");
     	
     }
 }

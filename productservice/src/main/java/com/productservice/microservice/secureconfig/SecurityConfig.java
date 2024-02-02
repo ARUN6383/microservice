@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import com.productservice.microservice.service.UserInfoUserDetailsService;
  
 @EnableWebSecurity
 @Configuration
@@ -26,17 +30,19 @@ public class SecurityConfig {
 	@Bean
 	public UserDetailsService userDetailService(PasswordEncoder encoder)
 	{
-		UserDetails admin = User.withUsername("arun")
-			 .password(encoder.encode("hiruthik"))
-			 .roles("admin")
-			 .build();
+//		UserDetails admin = User.withUsername("arun")
+//			 .password(encoder.encode("hiruthik"))
+//			 .roles("admin")
+//			 .build();
+//		
+//		UserDetails user = User.withUsername("murali")
+//				.password(encoder.encode("dharan"))
+//				.roles("user")
+//				.build();
+//		
+//		return new InMemoryUserDetailsManager(admin,user);
 		
-		UserDetails user = User.withUsername("murali")
-				.password(encoder.encode("dharan"))
-				.roles("user")
-				.build();
-		
-		return new InMemoryUserDetailsManager(admin,user);
+		return new UserInfoUserDetailsService();
 				
 	}
 	
@@ -46,16 +52,14 @@ public class SecurityConfig {
 	{
 		http
 		.authorizeHttpRequests((requests) -> requests
-			.requestMatchers("/api/product/getreq").permitAll()
+			.requestMatchers("/api/product/getreq","v1/user/add-new-user").permitAll()
 			.requestMatchers("api/product/say-good").authenticated()
 //			.requestMatchers("/").hasAnyAuthority("admin")
 			.anyRequest().authenticated()
 		)
-		.formLogin((form) -> form
-			.loginPage("")
-			.permitAll()
-		)
+		.formLogin(withDefaults())
 		.logout((logout) -> logout.permitAll());
+		http.exceptionHandling().accessDeniedPage("/");
 		 
 	return http.build();
 		
@@ -84,6 +88,14 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEnoder(){
 		return new BCryptPasswordEncoder();
 	}
- 
+	
+//	  @Bean
+//	    public AuthenticationProvider authenticationProvider(){
+//	        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
+////	        authenticationProvider.setUserDetailsService(userDetailsService());
+////	        authenticationProvider.setPasswordEncoder(passwordEncoder());
+//	        return authenticationProvider;
+//	    }
+// 
 }
  

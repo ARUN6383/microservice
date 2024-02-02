@@ -29,6 +29,7 @@ public class OrderController {
 	@PostMapping("/add")
 	public ResponseEntity<String> placeOrder(OrderRequest orderRequest)
 	{
+		System.out.println(orderRequest.getOrderLineItemsDtoList()+"&&&&&&&&&&&");
 		orderService.placeOrder(orderRequest);
 		return new ResponseEntity<>("successfully added", HttpStatus.OK);
 	}
