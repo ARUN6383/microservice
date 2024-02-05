@@ -2,10 +2,12 @@ package com.productservice.microservice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import com.productservice.microservice.model.UserDetails;
 import com.productservice.microservice.repo.UserRepo;
 
+@Service
 public class UserServiveCon {
 
 	@Autowired

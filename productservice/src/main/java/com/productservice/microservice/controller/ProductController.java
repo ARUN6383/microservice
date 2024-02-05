@@ -9,8 +9,10 @@ import org.springframework.web.bind.annotation.*;
  
 import com.productservice.microservice.dto.ProductRequest;
 import com.productservice.microservice.dto.ProductResponse;
+import com.productservice.microservice.model.UserDetails;
 import com.productservice.microservice.service.ProductService;
- 
+import com.productservice.microservice.service.UserServiveCon;
+
 import lombok.RequiredArgsConstructor;
  
 @RestController
@@ -26,6 +28,14 @@ public class ProductController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
  
+	UserServiveCon userDetailService = new UserServiveCon()	;
+//
+//	@PostMapping("/add-new-user")
+//	public ResponseEntity<String> addUserController(@RequestBody UserDetails userDetails)
+//	{
+//		userDetailService.addUser(userDetails);
+//		return ResponseEntity.ok("Item Added Successfully");
+//	}
     @GetMapping("/getreq")
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products = productService.getAllProducts();

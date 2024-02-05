@@ -6,8 +6,10 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,7 +30,7 @@ public class SecurityConfig {
 	
 	
 	@Bean
-	public UserDetailsService userDetailService(PasswordEncoder encoder)
+	public UserDetailsService userDetailService()
 	{
 //		UserDetails admin = User.withUsername("arun")
 //			 .password(encoder.encode("hiruthik"))
@@ -50,9 +52,9 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
 	{
-		http
+		http.csrf().disable()
 		.authorizeHttpRequests((requests) -> requests
-			.requestMatchers("/api/product/getreq","v1/user/add-new-user").permitAll()
+			.requestMatchers("/api/product/getreq","v1/user/add-new-user","v1/user/authenticate").permitAll()
 			.requestMatchers("api/product/say-good").authenticated()
 //			.requestMatchers("/").hasAnyAuthority("admin")
 			.anyRequest().authenticated()
@@ -89,13 +91,18 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 	
-//	  @Bean
-//	    public AuthenticationProvider authenticationProvider(){
-//	        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
-////	        authenticationProvider.setUserDetailsService(userDetailsService());
-////	        authenticationProvider.setPasswordEncoder(passwordEncoder());
-//	        return authenticationProvider;
-//	    }
-// 
+	  @Bean
+	    public AuthenticationProvider authenticationProvider(){
+	        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
+	        authenticationProvider.setUserDetailsService(userDetailService());
+	        authenticationProvider.setPasswordEncoder(passwordEnoder());
+	        return authenticationProvider;
+	    }
+	  
+	  @Bean
+	    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+	        return config.getAuthenticationManager();
+	    }
+ 
 }
  
