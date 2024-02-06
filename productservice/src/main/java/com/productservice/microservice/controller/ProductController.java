@@ -23,6 +23,7 @@ public class ProductController {
     private final ProductService productService;
  
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<Void> createProduct(@RequestBody ProductRequest productRequest) {
         productService.createProduct(productRequest);
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -37,6 +38,7 @@ public class ProductController {
 //		return ResponseEntity.ok("Item Added Successfully");
 //	}
     @GetMapping("/getreq")
+    @PreAuthorize("hasAuthority('ROLE_USER')")
     public ResponseEntity<List<ProductResponse>> getAllProducts() {
         List<ProductResponse> products = productService.getAllProducts();
         return new ResponseEntity<>(products, HttpStatus.OK);

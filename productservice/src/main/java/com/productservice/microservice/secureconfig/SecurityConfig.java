@@ -1,7 +1,8 @@
 package com.productservice.microservice.secureconfig;
  
 import static org.springframework.security.config.Customizer.withDefaults;
- 
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.productservice.microservice.service.UserInfoUserDetailsService;
  
@@ -28,6 +31,8 @@ import com.productservice.microservice.service.UserInfoUserDetailsService;
 @EnableMethodSecurity
 public class SecurityConfig {
 	
+	@Autowired
+	JwtAuthFilter jwtAuthFilter;
 	
 	@Bean
 	public UserDetailsService userDetailService()
@@ -50,15 +55,32 @@ public class SecurityConfig {
 	
 	
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
+	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
 	{
+//		 http
+//         .oauth2Client()
+//             .and()
+//         .oauth2Login()
+//         .tokenEndpoint()
+//             .and()
+//         .userInfoEndpoint();
+//
+//        http
+//         .sessionManagement()
+//         .sessionCreationPolicy(null);
+		
+		SessionCreationPolicy STATELESS = null;
 		http.csrf().disable()
 		.authorizeHttpRequests((requests) -> requests
 			.requestMatchers("/api/product/getreq","v1/user/add-new-user","v1/user/authenticate").permitAll()
-			.requestMatchers("api/product/say-good").authenticated()
+			.requestMatchers("api/product/say-good", "api/product/say-nice").authenticated()
 //			.requestMatchers("/").hasAnyAuthority("admin")
 			.anyRequest().authenticated()
+			
 		)
+        .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+		.authenticationProvider(authenticationProvider()).addFilterBefore(
+				jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
 		.formLogin(withDefaults())
 		.logout((logout) -> logout.permitAll());
 		http.exceptionHandling().accessDeniedPage("/");
@@ -66,7 +88,7 @@ public class SecurityConfig {
 	return http.build();
 		
 		
-//		return http.csrf().disable()
+//	        return http.csrf().disable()
 //		   				.authorizeHttpRequests()
 //		   				.requestMatchers("").permitAll()
 //		   				.and()
@@ -103,6 +125,7 @@ public class SecurityConfig {
 	    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 	        return config.getAuthenticationManager();
 	    }
+
  
 }
  

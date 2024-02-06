@@ -26,6 +26,9 @@ public class UserDetailController {
 	
 	@Autowired
 	JwtService jwtService;
+	
+	@Autowired
+	AuthenticationManager authenticationManger;
 
 	@PostMapping("/add-new-user")
 	public ResponseEntity<String> addUserController(@RequestBody UserDetails userDetails)
@@ -36,9 +39,9 @@ public class UserDetailController {
 	
 	@PostMapping("/authenticate")
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        Authentication authentication = authenticationManger.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getName(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
+            return jwtService.generateToken(authRequest.getName());
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
